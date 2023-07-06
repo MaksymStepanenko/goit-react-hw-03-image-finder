@@ -37,7 +37,7 @@ export class App extends Component {
   };
 
   onSubmit = value => {
-    console.log('🚀 ~ file: App.jsx:7 ~ App ~ value:', value);
+    // console.log('🚀 ~ file: App.jsx:7 ~ App ~ value:', value);
     this.setState({
       value,
       perPage: 12,
