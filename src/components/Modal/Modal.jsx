@@ -19,7 +19,7 @@ export class Modal extends Component {
     return (
       <StyledOverlay onClick={this.handleOverlayClick}>
         <StyledModal>
-          <img src={this.props.visibleData} width="600px" />
+          <img src={this.props.visibleData} alt={this.props.visibleData} />
         </StyledModal>
       </StyledOverlay>
     );
