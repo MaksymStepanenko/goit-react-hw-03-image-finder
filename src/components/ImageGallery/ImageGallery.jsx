@@ -11,7 +11,7 @@ export const ImageGallery = props => {
             key={id}
             webformatURL={webformatURL}
             largeImageURL={largeImageURL}
-            onOpenModal={props.onOpenModal}
+            onShowModal={props.onShowModal}
           />
         );
       })}
@@ -20,7 +20,7 @@ export const ImageGallery = props => {
 };
 
 ImageGallery.propTypes = {
-  onOpenModal: PropTypes.func.isRequired,
+  onShowModal: PropTypes.func.isRequired,
   photos: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,

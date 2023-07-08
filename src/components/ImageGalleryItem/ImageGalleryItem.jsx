@@ -4,7 +4,7 @@ import css from './ImageGalleryItem.module.css';
 export const ImageGalleryItem = ({
   webformatURL,
   largeImageURL,
-  onOpenModal,
+  onShowModal,
 }) => {
   return (
     <li className={css.item}>
@@ -12,7 +12,7 @@ export const ImageGalleryItem = ({
         className={css.image}
         src={webformatURL}
         alt={webformatURL}
-        onClick={() => onOpenModal(largeImageURL)}
+        onClick={() => onShowModal(largeImageURL)}
       />
     </li>
   );
@@ -21,5 +21,5 @@ export const ImageGalleryItem = ({
 ImageGalleryItem.propTypes = {
   webformatURL: PropTypes.string.isRequired,
   largeImageURL: PropTypes.string.isRequired,
-  onOpenModal: PropTypes.func.isRequired,
+  onShowModal: PropTypes.func.isRequired,
 };

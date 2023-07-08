@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 export class Modal extends Component {
   handleKeyDown = event => {
     if (event.code === 'Escape') {
-      this.props.onCloseModal();
+      this.props.onShowModal();
     }
   };
 
   handleOverlayClick = event => {
     if (event.currentTarget === event.target) {
-      this.props.onCloseModal();
+      this.props.onShowModal();
     }
   };
 
@@ -35,5 +35,5 @@ export class Modal extends Component {
 }
 Modal.propTypes = {
   visibleData: PropTypes.string.isRequired,
-  onCloseModal: PropTypes.func.isRequired,
+  onShowModal: PropTypes.func.isRequired,
 };

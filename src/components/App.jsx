@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
-import { fetchPhoto } from './services/api';
+import { fetchPhoto } from '../services/api';
 import { Loader } from './Loader/Loader';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 
@@ -10,29 +10,39 @@ import css from './App.module.css';
 
 export class App extends Component {
   state = {
-    modal: { isOpen: false, visibleData: '' },
+    // modal: { isOpen: false, visibleData: '' },
     isLoading: false,
     error: null,
     value: '',
     photos: [],
-    perPage: 12,
+    page: 1,
+    totalHits: 0,
+    isOpen: false,
+    visibleData: '',
   };
 
-  onOpenModal = data => {
-    this.setState({
-      modal: {
-        isOpen: true,
-        visibleData: data,
-      },
-    });
-  };
+  // onOpenModal = data => {
+  //   this.setState({
+  //     modal: {
+  //       isOpen: true,
+  //       visibleData: data,
+  //     },
+  //   });
+  // };
 
-  onCloseModal = () => {
+  // onCloseModal = () => {
+  //   this.setState({
+  //     modal: {
+  //       isOpen: false,
+  //       visibleData: null,
+  //     },
+  //   });
+  // };
+
+  onShowModal = data => {
     this.setState({
-      modal: {
-        isOpen: false,
-        visibleData: null,
-      },
+      isOpen: !this.state.isOpen,
+      visibleData: data,
     });
   };
 
@@ -40,54 +50,58 @@ export class App extends Component {
     // console.log('🚀 ~ file: App.jsx:7 ~ App ~ value:', value);
     this.setState({
       value,
-      perPage: 12,
+      page: 1,
+      photos: [],
+      totalHits: 0,
     });
   };
 
-  async componentDidUpdate(prevProps, prevState) {
-    const value = this.state.value;
-    const perPage = this.state.perPage;
+  handleFetchImages = async () => {
+    const { value, page } = this.state;
+    try {
+      this.setState({ isLoading: true });
+      const response = await fetchPhoto(value, page);
+      // console.log(response.hits);
+      const finalResult = response.hits;
+      const totalHits = response.totalHits;
+      this.setState(prevState => ({
+        photos: [...prevState.photos, ...finalResult],
+        totalHits,
+      }));
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  };
 
-    if (prevState.value !== value || prevState.perPage !== perPage) {
-      try {
-        this.setState({ isLoading: true });
-        const response = await fetchPhoto(value, perPage);
-        // console.log(response.hits);
-        const finalResult = response.hits;
-        this.setState({
-          photos: [...finalResult],
-        });
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.setState({ isLoading: false });
-      }
+  async componentDidUpdate(_, prevState) {
+    const { value, page } = this.state;
+
+    if (prevState.value !== value || prevState.page !== page) {
+      this.handleFetchImages();
     }
   }
 
   downloadMorePage = () => {
-    this.setState(prevState => {
-      return { perPage: prevState.perPage + 12 };
-    });
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
   };
 
   render() {
+    const { photos, page, isLoading, totalHits, isOpen, visibleData } =
+      this.state;
     return (
       <div className={css.App}>
-        {this.state.modal.isOpen && (
-          <Modal
-            onCloseModal={this.onCloseModal}
-            visibleData={this.state.modal.visibleData}
-          />
+        {isOpen && (
+          <Modal onShowModal={this.onShowModal} visibleData={visibleData} />
         )}
         <Searchbar onSubmit={this.onSubmit} />
-        {this.state.isLoading && this.state.perPage === 12 && <Loader />}
-        <ImageGallery
-          photos={this.state.photos}
-          onOpenModal={this.onOpenModal}
-        />
-        {this.state.isLoading && this.state.perPage > 12 && <Loader />}
-        {this.state.value !== '' && this.state.photos.length > 1 && (
+        {isLoading && page === 1 && <Loader />}
+        <ImageGallery photos={photos} onShowModal={this.onShowModal} />
+        {isLoading && page > 1 && <Loader />}
+        {photos.length < totalHits && (
           <Button downloadMorePage={this.downloadMorePage} />
         )}
       </div>
