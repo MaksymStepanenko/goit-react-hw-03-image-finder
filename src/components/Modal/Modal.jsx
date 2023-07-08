@@ -15,6 +15,14 @@ export class Modal extends Component {
     }
   };
 
+  componentDidMount() {
+    window.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown);
+  }
+
   render() {
     return (
       <StyledOverlay onClick={this.handleOverlayClick}>
