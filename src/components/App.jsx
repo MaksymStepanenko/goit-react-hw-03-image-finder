@@ -38,7 +38,7 @@ export const App = () => {
         const response = await fetchPhoto(value, page);
         const finalResult = response.hits;
         const totalHits = response.totalHits;
-        setPhotos([...photos, ...finalResult]);
+        setPhotos(prevPhotos => [...prevPhotos, ...finalResult]);
         setTotalHits(totalHits);
       } catch (error) {
         console.log(error.message);
@@ -48,7 +48,7 @@ export const App = () => {
     };
 
     handleFetchImages();
-  }, [value, page]);
+  }, [value, page ]);
 
   const downloadMorePage = () => {
     setPage(page + 1);
