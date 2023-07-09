@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
@@ -8,102 +8,64 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 
 import css from './App.module.css';
 
-export class App extends Component {
-  state = {
-    isLoading: false,
-    error: null,
-    value: '',
-    photos: [],
-    page: 1,
-    totalHits: 0,
-    isOpen: false,
-    visibleData: '',
+export const App = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [value, setValue] = useState('');
+  const [photos, setPhotos] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalHits, setTotalHits] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [visibleData, setVisibleData] = useState('');
+
+  const onShowModal = data => {
+    setIsOpen(!isOpen);
+    setVisibleData(data);
   };
 
-  // onOpenModal = data => {
-  //   this.setState({
-  //     modal: {
-  //       isOpen: true,
-  //       visibleData: data,
-  //     },
-  //   });
-  // };
-
-  // onCloseModal = () => {
-  //   this.setState({
-  //     modal: {
-  //       isOpen: false,
-  //       visibleData: null,
-  //     },
-  //   });
-  // };
-
-  onShowModal = data => {
-    this.setState({
-      isOpen: !this.state.isOpen,
-      visibleData: data,
-    });
+  const onSubmit = value => {
+    setValue(value);
+    setPage(1);
+    setPhotos([]);
+    setTotalHits(0);
   };
 
-  onSubmit = value => {
-    // console.log('🚀 ~ file: App.jsx:7 ~ App ~ value:', value);
-    this.setState({
-      value,
-      page: 1,
-      photos: [],
-      totalHits: 0,
-    });
-  };
+  useEffect(() => {
+    if (value) {
+      const handleFetchImages = async () => {
+        try {
+          // setState({ isLoading: true });
+          setIsLoading(true);
+          const response = await fetchPhoto(value, page);
+          const finalResult = response.hits;
+          console.log(value);
+          const totalHits = response.totalHits;
+          setPhotos([...photos, ...finalResult]);
+          setTotalHits(totalHits);
+        } catch (error) {
+          console.log(error.message);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-  handleFetchImages = async () => {
-    const { value, page } = this.state;
-    try {
-      this.setState({ isLoading: true });
-      const response = await fetchPhoto(value, page);
-      // console.log(response.hits);
-      const finalResult = response.hits;
-      const totalHits = response.totalHits;
-      this.setState(prevState => ({
-        photos: [...prevState.photos, ...finalResult],
-        totalHits,
-      }));
-    } catch (error) {
-      console.log(error.message);
-    } finally {
-      this.setState({ isLoading: false });
+      handleFetchImages();
     }
+  }, [value, page]);
+
+  const downloadMorePage = () => {
+    setPage(page + 1);
   };
 
-  async componentDidUpdate(_, prevState) {
-    const { value, page } = this.state;
-
-    if (prevState.value !== value || prevState.page !== page) {
-      this.handleFetchImages();
-    }
-  }
-
-  downloadMorePage = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
-  };
-
-  render() {
-    const { photos, page, isLoading, totalHits, isOpen, visibleData } =
-      this.state;
-    return (
-      <div className={css.App}>
-        {isOpen && (
-          <Modal onShowModal={this.onShowModal} visibleData={visibleData} />
-        )}
-        <Searchbar onSubmit={this.onSubmit} />
-        {isLoading && page === 1 && <Loader />}
-        <ImageGallery photos={photos} onShowModal={this.onShowModal} />
-        {isLoading && page > 1 && <Loader />}
-        {photos.length < totalHits && (
-          <Button downloadMorePage={this.downloadMorePage} />
-        )}
-      </div>
-    );
-  }
-}
+  return (
+    <div className={css.App}>
+      {isOpen && <Modal onShowModal={onShowModal} visibleData={visibleData} />}
+      <Searchbar onSubmit={onSubmit} />
+      {isLoading && page === 1 && <Loader />}
+      <ImageGallery photos={photos} onShowModal={onShowModal} />
+      {isLoading && page > 1 && <Loader />}
+      {photos.length < totalHits && (
+        <Button downloadMorePage={downloadMorePage} />
+      )}
+    </div>
+  );
+};

@@ -1,50 +1,44 @@
-import React, { Component } from 'react';
-import css from './Searchbar.module.css'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react';
+import css from './Searchbar.module.css';
+import PropTypes from 'prop-types';
 
-export class Searchbar extends Component {
-  state = {
-    inputValue: '',
-  };
+export const Searchbar = ({ onSubmit }) => {
+  const [inputValue, setInputValue] = useState('');
 
-  handleSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    this.props.onSubmit(this.state.inputValue);
-    this.setState({
-      inputValue: '',
-    });
+    onSubmit(inputValue);
+
+    setInputValue('');
   };
 
-  handleInputChange = e => {
+  const handleInputChange = e => {
     const { value } = e.currentTarget;
-    this.setState({
-      inputValue: value,
-    });
+
+    setInputValue(value);
   };
 
-  render() {
-    return (
-      <header className={css.searchbar}>
-        <form className={css.form} onSubmit={this.handleSubmit}>
-          <button type="submit" className={css.button}>
-            <span className={css.label}>Search</span>
-          </button>
+  return (
+    <header className={css.searchbar}>
+      <form className={css.form} onSubmit={handleSubmit}>
+        <button type="submit" className={css.button}>
+          <span className={css.label}>Search</span>
+        </button>
 
-          <input
-            onChange={this.handleInputChange}
-            className={css.input}
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            value={this.state.inputValue}
-          />
-        </form>
-      </header>
-    );
-  }
-}
+        <input
+          onChange={handleInputChange}
+          className={css.input}
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          value={inputValue}
+        />
+      </form>
+    </header>
+  );
+};
 
 Searchbar.propTypes = {
-  onSubmit: PropTypes.func.isRequired
-}
+  onSubmit: PropTypes.func.isRequired,
+};
