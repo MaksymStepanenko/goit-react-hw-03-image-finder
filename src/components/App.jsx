@@ -10,7 +10,6 @@ import css from './App.module.css';
 
 export class App extends Component {
   state = {
-    // modal: { isOpen: false, visibleData: '' },
     isLoading: false,
     error: null,
     value: '',
