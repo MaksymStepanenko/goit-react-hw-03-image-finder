@@ -33,7 +33,6 @@ export const App = () => {
     if (value) {
       const handleFetchImages = async () => {
         try {
-          // setState({ isLoading: true });
           setIsLoading(true);
           const response = await fetchPhoto(value, page);
           const finalResult = response.hits;
@@ -50,7 +49,7 @@ export const App = () => {
 
       handleFetchImages();
     }
-  }, [value, page]);
+  }, [value, page, photos]);
 
   const downloadMorePage = () => {
     setPage(page + 1);
