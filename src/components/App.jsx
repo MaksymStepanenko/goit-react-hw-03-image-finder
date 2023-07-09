@@ -30,26 +30,25 @@ export const App = () => {
   };
 
   useEffect(() => {
-    if (value) {
-      const handleFetchImages = async () => {
-        try {
-          setIsLoading(true);
-          const response = await fetchPhoto(value, page);
-          const finalResult = response.hits;
-          console.log(value);
-          const totalHits = response.totalHits;
-          setPhotos([...photos, ...finalResult]);
-          setTotalHits(totalHits);
-        } catch (error) {
-          console.log(error.message);
-        } finally {
-          setIsLoading(false);
-        }
-      };
+    if (value === '') return;
 
-      handleFetchImages();
-    }
-  }, [value, page, photos]);
+    const handleFetchImages = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetchPhoto(value, page);
+        const finalResult = response.hits;
+        const totalHits = response.totalHits;
+        setPhotos([...photos, ...finalResult]);
+        setTotalHits(totalHits);
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    handleFetchImages();
+  }, [value, page]);
 
   const downloadMorePage = () => {
     setPage(page + 1);
